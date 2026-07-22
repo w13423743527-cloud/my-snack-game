@@ -2,354 +2,288 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>经典贪吃蛇小游戏</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YArch-Gallery | 建筑案例分享</title>
     <style>
-        /* ================= 页面和元素的样式 ================= */
+        /* =========================================
+           全局样式设置 (Global Styles)
+           ========================================= */
+        :root {
+            /* 极简灰阶与低饱和度色彩系统 */
+            --bg-color: #ffffff;
+            --text-main: #1a1a1a;
+            --text-muted: #737373;
+            --border-color: #e5e5e5;
+            --hero-gradient: linear-gradient(135deg, #2c2d30 0%, #111112 100%);
+            --font-stack: 'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
+            font-family: var(--font-stack);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: color 0.3s ease;
+        }
+
+        img {
+            max-width: 100%;
+            display: block;
+        }
+
+        /* =========================================
+           导航栏 (Navigation)
+           ========================================= */
+        header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .nav-links a:hover {
+            color: var(--text-main);
+        }
+
+        /* =========================================
+           头图区域 (Hero Section)
+           ========================================= */
+        .hero {
+            height: 60vh;
+            min-height: 400px;
+            background: var(--hero-gradient);
+            color: #ffffff;
             display: flex;
             flex-direction: column;
-            align-items: center;
             justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #2c3e50; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: white;
-            /* 阻止双击放大和默认的触摸行为 */
-            touch-action: none; 
+            align-items: center;
+            text-align: center;
+            padding: 0 2rem;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: #a0a0a0;
+            max-width: 600px;
+            font-weight: 300;
+        }
+
+        /* =========================================
+           案例展示区 (Cases Section)
+           ========================================= */
+        .cases-section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 400;
+            margin-bottom: 3rem;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .case-grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 3rem;
+        }
+
+        /* 卡片样式 */
+        .case-card {
+            display: flex;
+            flex-direction: column;
+            group: 1;
+        }
+
+        .card-image {
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            background-color: #f0f0f0; /* 图片未加载时的占位色 */
+            object-fit: cover;
+            margin-bottom: 1.5rem;
+            transition: opacity 0.3s ease;
+        }
+
+        .case-card:hover .card-image {
+            opacity: 0.9;
+        }
+
+        .card-info h3 {
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-info p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
             overflow: hidden;
         }
 
-        h1 {
-            margin-top: 0;
-            margin-bottom: 10px;
+        .read-more {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--text-main);
+            padding-bottom: 2px;
+            align-self: flex-start;
         }
 
-        #scoreContainer {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 15px;
+        .read-more:hover {
+            color: var(--text-muted);
+            border-color: var(--text-muted);
         }
 
-        .score-box {
-            font-size: 20px;
-            font-weight: bold;
-            padding: 10px 20px;
-            background-color: #34495e;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        }
-
-        #startBtn {
-            padding: 10px 30px;
-            font-size: 18px;
-            font-weight: bold;
-            color: white;
-            background-color: #27ae60;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            transition: background-color 0.3s;
-            /* 增大按钮在手机上的点击区域 */
-            min-height: 44px; 
-        }
-
-        #startBtn:hover {
-            background-color: #2ecc71;
-        }
-
-        canvas {
-            background-color: #ecf0f1; 
-            border: 4px solid #bdc3c7;
-            border-radius: 5px;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.5);
-            /* 确保画布在小屏幕手机上也能自适应显示 */
-            max-width: 95vw; 
-            max-height: 95vw;
-        }
-
-        .instructions {
-            margin-top: 15px;
-            font-size: 14px;
-            color: #bdc3c7;
+        /* =========================================
+           页脚 (Footer)
+           ========================================= */
+        footer {
+            padding: 3rem 2rem;
             text-align: center;
-            padding: 0 10px;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* =========================================
+           响应式设计 (Media Queries)
+           ========================================= */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                gap: 1.5rem;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .cases-section {
+                padding: 3rem 1.5rem;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .case-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
     </style>
 </head>
 <body>
 
-    <h1>贪吃蛇</h1>
-    
-    <div id="scoreContainer">
-        <div id="scoreBoard" class="score-box">分数: 0</div>
-        <div id="highScoreBoard" class="score-box">最高分: 0</div>
-    </div>
-    
-    <button id="startBtn">开始游戏</button>
+    <!-- 导航栏 -->
+    <header>
+        <a href="#" class="logo">YArch-Gallery</a>
+        <ul class="nav-links">
+            <li><a href="#">首页</a></li>
+            <li><a href="#">关于</a></li>
+            <li><a href="#">案例列表</a></li>
+        </ul>
+    </header>
 
-    <!-- 游戏主画布 -->
-    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <main>
+        <!-- 头图区域 -->
+        <section class="hero">
+            <h1>探索空间与光影的诗意</h1>
+            <p>在这里，我们记录、解构并分享世界上最具启发性的现代建筑案例，体会极简美学背后的设计哲学。</p>
+        </section>
 
-    <!-- 更新了操作说明 -->
-    <div class="instructions">电脑: 使用 ⬆️ ⬇️ ⬅️ ➡️ 控制<br>手机: 在屏幕上直接滑动控制</div>
+        <!-- 案例预览区 -->
+        <section class="cases-section">
+            <h2 class="section-title">精选案例</h2>
+            <div class="case-grid">
+                
+                <!-- 卡片 1 -->
+                <article class="case-card">
+                    <!-- src 替换为真实图片地址 -->
+                    <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="清水混凝土住宅" class="card-image">
+                    <div class="card-info">
+                        <h3>光之教堂 (示例)</h3>
+                        <p>安藤忠雄的代表作之一，通过极简的清水混凝土墙面与十字形的自然光切口，营造出神圣而静谧的精神空间。</p>
+                        <a href="#" class="read-more">阅读更多</a>
+                    </div>
+                </article>
 
-    <script>
-        /* ================= 游戏核心逻辑 (JavaScript) ================= */
+                <!-- 卡片 2 -->
+                <article class="case-card">
+                    <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="现代极简别墅" class="card-image">
+                    <div class="card-info">
+                        <h3>流水别墅 (示例)</h3>
+                        <p>弗兰克·劳埃德·赖特的有机建筑巅峰，悬挑的阳台与自然瀑布完美融合，展现了人居与环境的和谐共生。</p>
+                        <a href="#" class="read-more">阅读更多</a>
+                    </div>
+                </article>
 
-        const canvas = document.getElementById("gameCanvas");
-        const ctx = canvas.getContext("2d");
+                <!-- 卡片 3 -->
+                <article class="case-card">
+                    <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="现代美术馆" class="card-image">
+                    <div class="card-info">
+                        <h3>丰岛美术馆 (示例)</h3>
+                        <p>西泽立卫与内藤礼的合作结晶。水滴状的纯白混凝土外壳，没有一根柱子，任由风、光线与水在空间内自由流淌。</p>
+                        <a href="#" class="read-more">阅读更多</a>
+                    </div>
+                </article>
 
-        // 根据屏幕大小调整 gridSize（可选优化，目前保持 20 适配 400x400）
-        const gridSize = 20; 
-        let score = 0;       
-        let gameSpeed = 100; 
-        let gameLoop;        
-        let isGameRunning = false; 
+            </div>
+        </section>
+    </main>
 
-        let highScore = localStorage.getItem('snakeHighScore') || 0;
-        document.getElementById('highScoreBoard').innerHTML = "最高分: " + highScore;
+    <!-- 页脚 -->
+    <footer>
+        <p>&copy; 2024 YArch-Gallery. All rights reserved.</p>
+    </footer>
 
-        let snake = [];
-        let dx = gridSize; 
-        let dy = 0;
-        let changingDirection = false; 
-        let foodX;
-        let foodY;
-
-        // --- 新增：触摸滑动控制变量 ---
-        let touchStartX = 0;
-        let touchStartY = 0;
-
-        // 监听电脑键盘
-        document.addEventListener("keydown", changeDirection); 
-        // 监听按钮点击
-        document.getElementById('startBtn').addEventListener('click', startGame);
-
-        // --- 新增：监听手机触摸事件 ---
-        canvas.addEventListener('touchstart', function(e) {
-            if (!isGameRunning) return;
-            touchStartX = e.changedTouches[0].screenX;
-            touchStartY = e.changedTouches[0].screenY;
-        }, {passive: false});
-
-        canvas.addEventListener('touchmove', function(e) {
-            // 阻止手机端滑动屏幕时的默认网页滚动，防止游戏画面跑掉
-            if (isGameRunning) {
-                e.preventDefault(); 
-            }
-        }, {passive: false});
-
-        canvas.addEventListener('touchend', function(e) {
-            if (!isGameRunning || changingDirection) return;
-            
-            let touchEndX = e.changedTouches[0].screenX;
-            let touchEndY = e.changedTouches[0].screenY;
-            
-            handleSwipe(touchStartX, touchStartY, touchEndX, touchEndY);
-        }, {passive: false});
-
-        // 初始化/重置并开始游戏
-        function startGame() {
-            if (isGameRunning) return; 
-            isGameRunning = true;
-
-            document.getElementById('startBtn').style.display = 'none';
-
-            score = 0;
-            document.getElementById('scoreBoard').innerHTML = "分数: " + score;
-            dx = gridSize;
-            dy = 0;
-            snake = [
-                { x: 200, y: 200 },
-                { x: 180, y: 200 },
-                { x: 160, y: 200 }
-            ];
-            
-            createFood();
-            gameLoop = setInterval(main, gameSpeed); 
-        }
-
-        // 游戏主循环
-        function main() {
-            if (hasGameEnded()) {
-                clearInterval(gameLoop); 
-                isGameRunning = false;   
-
-                if (score > highScore) {
-                    highScore = score;
-                    localStorage.setItem('snakeHighScore', highScore); 
-                    document.getElementById('highScoreBoard').innerHTML = "最高分: " + highScore;
-                }
-
-                alert("游戏结束！你的最终得分是：" + score);
-
-                const startBtn = document.getElementById('startBtn');
-                startBtn.style.display = 'block';
-                startBtn.innerText = '重新开始';
-                return;
-            }
-
-            changingDirection = false; 
-            clearCanvas();             
-            drawFood();                
-            moveSnake();               
-            drawSnake();               
-        }
-
-        function clearCanvas() {
-            ctx.fillStyle = "#ecf0f1"; 
-            ctx.strokeStyle = "#bdc3c7";
-            ctx.fillRect(0, 0, canvas.width, canvas.height); 
-            ctx.strokeRect(0, 0, canvas.width, canvas.height);
-        }
-
-        function drawSnake() {
-            snake.forEach(drawSnakePart);
-        }
-
-        function drawSnakePart(snakePart, index) {
-            ctx.fillStyle = index === 0 ? "#27ae60" : "#2ecc71"; 
-            ctx.strokeStyle = "#27ae60"; 
-            ctx.fillRect(snakePart.x, snakePart.y, gridSize, gridSize);
-            ctx.strokeRect(snakePart.x, snakePart.y, gridSize, gridSize);
-        }
-
-        function moveSnake() {
-            const head = { x: snake[0].x + dx, y: snake[0].y + dy };
-            snake.unshift(head);
-            const hasEatenFood = snake[0].x === foodX && snake[0].y === foodY;
-
-            if (hasEatenFood) {
-                score += 10;
-                document.getElementById('scoreBoard').innerHTML = "分数: " + score;
-                createFood();
-            } else {
-                snake.pop();
-            }
-        }
-
-        // --- 新增：处理手机滑动的逻辑 ---
-        function handleSwipe(startX, startY, endX, endY) {
-            const diffX = endX - startX;
-            const diffY = endY - startY;
-            
-            // 如果滑动距离太短（防误触），则忽略
-            if (Math.abs(diffX) < 30 && Math.abs(diffY) < 30) return;
-
-            const goingUp = dy === -gridSize;
-            const goingDown = dy === gridSize;
-            const goingRight = dx === gridSize;
-            const goingLeft = dx === -gridSize;
-
-            // 判断是水平滑动还是垂直滑动
-            if (Math.abs(diffX) > Math.abs(diffY)) {
-                // 水平滑动
-                if (diffX > 0 && !goingLeft) {
-                    dx = gridSize;
-                    dy = 0;
-                    changingDirection = true;
-                } else if (diffX < 0 && !goingRight) {
-                    dx = -gridSize;
-                    dy = 0;
-                    changingDirection = true;
-                }
-            } else {
-                // 垂直滑动
-                if (diffY > 0 && !goingUp) {
-                    dx = 0;
-                    dy = gridSize;
-                    changingDirection = true;
-                } else if (diffY < 0 && !goingDown) {
-                    dx = 0;
-                    dy = -gridSize;
-                    changingDirection = true;
-                }
-            }
-        }
-
-        // 处理电脑键盘按键
-        function changeDirection(event) {
-            if (!isGameRunning) return; 
-            if (changingDirection) return;
-
-            const LEFT_KEY = 37;
-            const RIGHT_KEY = 39;
-            const UP_KEY = 38;
-            const DOWN_KEY = 40;
-
-            const keyPressed = event.keyCode;
-            const goingUp = dy === -gridSize;
-            const goingDown = dy === gridSize;
-            const goingRight = dx === gridSize;
-            const goingLeft = dx === -gridSize;
-
-            if (keyPressed === LEFT_KEY && !goingRight) {
-                dx = -gridSize;
-                dy = 0;
-                changingDirection = true;
-            }
-            if (keyPressed === UP_KEY && !goingDown) {
-                dx = 0;
-                dy = -gridSize;
-                changingDirection = true;
-            }
-            if (keyPressed === RIGHT_KEY && !goingLeft) {
-                dx = gridSize;
-                dy = 0;
-                changingDirection = true;
-            }
-            if (keyPressed === DOWN_KEY && !goingUp) {
-                dx = 0;
-                dy = gridSize;
-                changingDirection = true;
-            }
-        }
-
-        function hasGameEnded() {
-            for (let i = 4; i < snake.length; i++) {
-                if (snake[i].x === snake[0].x && snake[i].y === snake[0].y) return true;
-            }
-            const hitLeftWall = snake[0].x < 0;
-            const hitRightWall = snake[0].x >= canvas.width;
-            const hitToptWall = snake[0].y < 0;
-            const hitBottomWall = snake[0].y >= canvas.height;
-
-            return hitLeftWall || hitRightWall || hitToptWall || hitBottomWall;
-        }
-
-        function randomTen(min, max) {
-            return Math.round((Math.random() * (max - min) + min) / gridSize) * gridSize;
-        }
-
-        function createFood() {
-            foodX = randomTen(0, canvas.width - gridSize);
-            foodY = randomTen(0, canvas.height - gridSize);
-            snake.forEach(function isFoodOnSnake(part) {
-                const foodIsOnSnake = part.x == foodX && part.y == foodY;
-                if (foodIsOnSnake) createFood(); 
-            });
-        }
-
-        function drawFood() {
-            ctx.fillStyle = "#e74c3c"; 
-            ctx.strokeStyle = "#c0392b";
-            ctx.fillRect(foodX, foodY, gridSize, gridSize);
-            ctx.strokeRect(foodX, foodY, gridSize, gridSize);
-        }
-
-        // 初始化页面静态画面
-        snake = [
-            { x: 200, y: 200 },
-            { x: 180, y: 200 },
-            { x: 160, y: 200 }
-        ];
-        clearCanvas();
-        drawSnake();
-
-    </script>
 </body>
 </html>
